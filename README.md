@@ -1,2 +1,1060 @@
 # Finflow
 PM Digital Finflow
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinFlow SME — Accounting Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg2:#161920;--bg3:#1e2229;--bg4:#252b34;
+  --border:#2a3040;--border2:#333d50;
+  --text:#e8eaf0;--text2:#9aa3b5;--text3:#5c6578;
+  --green:#1fce8a;--green2:#17a06d;--green3:#0d6b47;--green4:#0a4f35;
+  --blue:#3d8ef0;--blue2:#2563cc;
+  --amber:#f5a623;--amber2:#c4811a;
+  --red:#f05252;--red2:#c23a3a;
+  --purple:#9c6fff;
+  --nav-w:230px;
+  --hdr-h:58px;
+  --radius:10px;--radius-sm:7px;
+  font-family:'DM Sans',system-ui,sans-serif;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+/* ─── LAYOUT ─── */
+.app{display:flex;height:100vh;width:100vw;}
+.sidebar{width:var(--nav-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+/* ─── SIDEBAR ─── */
+.logo{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--green),var(--green2));border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-icon i{color:#fff;font-size:17px;}
+.logo-name{font-size:15px;font-weight:600;color:var(--text);}
+.logo-sub{font-size:10px;color:var(--text3);letter-spacing:.04em;}
+.nav{flex:1;overflow-y:auto;padding:10px 0;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none}
+.nav-section{padding:10px 20px 4px;font-size:9px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .15s;position:relative;}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:var(--green4);color:var(--green);font-weight:500;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--green);border-radius:0 2px 2px 0;}
+.nav-item i{font-size:16px;}
+.nav-badge{margin-left:auto;background:var(--red2);color:#fcc;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:600;}
+.nav-badge.amber{background:var(--amber2);color:#ffe4a0;}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);}
+.user-chip{display:flex;align-items:center;gap:9px;}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;flex-shrink:0;}
+.user-name{font-size:12px;font-weight:500;color:var(--text);}
+.user-role{font-size:10px;color:var(--text3);}
+/* ─── TOPBAR ─── */
+.topbar{height:var(--hdr-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0;}
+.topbar-title{font-size:16px;font-weight:600;color:var(--text);flex:1;}
+.topbar-badge{font-size:10px;background:var(--bg4);color:var(--text3);padding:4px 10px;border-radius:20px;border:1px solid var(--border);}
+.btn-outline{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);padding:7px 13px;border-radius:var(--radius-sm);cursor:pointer;border:1px solid var(--border);background:transparent;font-family:inherit;transition:all .15s;}
+.btn-outline:hover{border-color:var(--border2);color:var(--text);background:var(--bg3);}
+.btn-primary{display:flex;align-items:center;gap:6px;font-size:12px;color:#fff;padding:7px 14px;border-radius:var(--radius-sm);cursor:pointer;border:none;background:var(--green2);font-family:inherit;font-weight:500;transition:all .15s;}
+.btn-primary:hover{background:var(--green);}
+/* ─── CONTENT ─── */
+.content{flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:18px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+/* ─── PANELS ─── */
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.panel-title{font-size:13px;font-weight:600;color:var(--text);}
+.panel-sub{font-size:11px;color:var(--text3);}
+.panel-link{font-size:12px;color:var(--green);cursor:pointer;background:none;border:none;font-family:inherit;transition:opacity .15s;}
+.panel-link:hover{opacity:.7;}
+/* ─── KPI CARDS ─── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.kpi-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;transition:border-color .2s;}
+.kpi-card:hover{border-color:var(--border2);}
+.kpi-label{font-size:11px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.04em;}
+.kpi-label i{font-size:13px;}
+.kpi-value{font-size:24px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
+.kpi-delta{display:inline-flex;align-items:center;gap:3px;font-size:11px;margin-top:6px;padding:3px 8px;border-radius:20px;font-weight:500;}
+.kpi-delta.up{background:rgba(31,206,138,.12);color:var(--green);}
+.kpi-delta.down{background:rgba(240,82,82,.12);color:var(--red);}
+.kpi-delta.neutral{background:var(--bg4);color:var(--text3);}
+/* ─── CHARTS ─── */
+.charts-row{display:grid;grid-template-columns:1.65fr 1fr;gap:16px;}
+.chart-wrap{position:relative;width:100%;}
+/* ─── TABLE ─── */
+.data-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.data-table th{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:0 0 10px;text-align:left;border-bottom:1px solid var(--border);}
+.data-table td{padding:10px 0;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table td.mono{font-family:'DM Mono',monospace;font-size:12px;}
+.data-table td.muted{color:var(--text3);}
+.data-table td.green{color:var(--green);}
+.data-table td.red{color:var(--red);}
+.data-table td.amber{color:var(--amber);}
+.data-table tr:hover td{background:rgba(255,255,255,.015);}
+/* ─── PILLS ─── */
+.pill{display:inline-flex;align-items:center;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:600;letter-spacing:.02em;}
+.pill-paid{background:rgba(31,206,138,.12);color:var(--green);}
+.pill-due{background:rgba(245,166,35,.12);color:var(--amber);}
+.pill-overdue{background:rgba(240,82,82,.12);color:var(--red);}
+.pill-draft{background:var(--bg4);color:var(--text3);}
+.pill-approved{background:rgba(61,142,240,.12);color:var(--blue);}
+/* ─── PROGRESS ─── */
+.prog-item{margin-bottom:14px;}
+.prog-item:last-child{margin-bottom:0;}
+.prog-header{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;}
+.prog-label{color:var(--text);}
+.prog-pct{color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;}
+.prog-track{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+/* ─── TABS ─── */
+.tabs{display:flex;gap:2px;background:var(--bg3);padding:3px;border-radius:var(--radius-sm);width:fit-content;}
+.tab{font-size:12px;padding:5px 14px;border-radius:5px;cursor:pointer;color:var(--text2);transition:all .15s;border:none;background:none;font-family:inherit;}
+.tab.active{background:var(--bg2);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+/* ─── AI INSIGHT ─── */
+.ai-bar{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:flex-start;gap:14px;}
+.ai-bar-icon{width:34px;height:34px;background:rgba(31,206,138,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ai-bar-icon i{color:var(--green);font-size:17px;}
+.ai-bar-title{font-size:11px;font-weight:600;color:var(--green);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;}
+.ai-bar-text{font-size:12.5px;color:var(--text2);line-height:1.65;}
+/* ─── STAT MINI ─── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.stat-mini{background:var(--bg3);border-radius:var(--radius-sm);padding:12px 14px;border:1px solid var(--border);}
+.stat-mini-label{font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+.stat-mini-value{font-size:18px;font-weight:600;color:var(--text);}
+/* ─── FORM ─── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;}
+.form-input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-size:13px;color:var(--text);font-family:'DM Sans',inherit;outline:none;transition:border-color .15s;}
+.form-input:focus{border-color:var(--green2);}
+.form-select{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-size:13px;color:var(--text);font-family:inherit;outline:none;appearance:none;transition:border-color .15s;}
+.form-select:focus{border-color:var(--green2);}
+/* ─── REPORT CARDS ─── */
+.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.report-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:10px;}
+.report-card:hover{border-color:var(--green2);transform:translateY(-1px);}
+.report-card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.report-card-name{font-size:13px;font-weight:500;color:var(--text);}
+.report-card-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+/* ─── BOTTOM ROW ─── */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* ─── VIEWS ─── */
+.view{display:none;flex-direction:column;gap:18px;}
+.view.active{display:flex;}
+/* ─── COA ─── */
+.coa-tree{font-size:12.5px;}
+.coa-group{margin-bottom:2px;}
+.coa-header{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);cursor:pointer;user-select:none;}
+.coa-header:hover{background:var(--bg4);}
+.coa-header-name{flex:1;font-weight:600;color:var(--text);}
+.coa-header-total{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
+.coa-children{padding-left:20px;}
+.coa-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);cursor:pointer;}
+.coa-row:hover{background:var(--bg3);}
+.coa-row:last-child{border-bottom:none;}
+.coa-code{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);width:60px;}
+.coa-name{flex:1;color:var(--text2);}
+.coa-balance{font-family:'DM Mono',monospace;font-size:11px;color:var(--text);}
+/* ─── TOAST ─── */
+.toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--text);min-width:280px;animation:slideIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.toast.error{border-left-color:var(--red);}
+.toast.warning{border-left-color:var(--amber);}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+/* ─── MODAL ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:8000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:520px;max-width:90vw;max-height:80vh;overflow-y:auto;}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-size:15px;font-weight:600;color:var(--text);}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;line-height:1;transition:color .15s;}
+.modal-close:hover{color:var(--text);}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+/* ─── MISC ─── */
+.section-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-title{font-size:13px;font-weight:600;color:var(--text);}
+.flex-gap{display:flex;align-items:center;gap:8px;}
+.spacer{flex:1;}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;background:var(--bg4);color:var(--text3);font-weight:500;}
+.tag.green{background:rgba(31,206,138,.1);color:var(--green);}
+.tag.blue{background:rgba(61,142,240,.1);color:var(--blue);}
+.divider{height:1px;background:var(--border);margin:4px 0;}
+.scroll-x{overflow-x:auto;}
+.fs-report{font-family:'DM Mono',monospace;font-size:12px;line-height:2;}
+.fs-report .fs-head{font-size:13px;font-weight:600;color:var(--text);padding:6px 0 4px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.fs-report .fs-row{display:flex;justify-content:space-between;padding:3px 0;color:var(--text2);}
+.fs-report .fs-row.indent{padding-left:18px;}
+.fs-report .fs-row.total{color:var(--text);font-weight:600;border-top:1px solid var(--border);margin-top:2px;padding-top:4px;}
+.fs-report .fs-row.grand{color:var(--green);font-weight:600;font-size:13px;border-top:2px solid var(--green);padding-top:5px;margin-top:4px;}
+/* ─── PAYROLL ─── */
+.pay-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+.pay-emp{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.pay-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;}
+/* ─── INVENTORY ─── */
+.inv-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;}
+.inv-ok{background:rgba(31,206,138,.1);color:var(--green);}
+.inv-low{background:rgba(245,166,35,.1);color:var(--amber);}
+.inv-out{background:rgba(240,82,82,.1);color:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">New Journal Entry</div>
+      <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveModal()"><i class="ti ti-check"></i> Save & Post</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-report-money"></i></div>
+      <div>
+        <div class="logo-name">FinFlow SME</div>
+        <div class="logo-sub">ACCOUNTING SUITE v2.0</div>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" id="nav-dashboard" onclick="nav('dashboard')"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+
+      <div class="nav-section">Core Accounting</div>
+      <div class="nav-item" id="nav-coa" onclick="nav('coa')"><i class="ti ti-sitemap"></i>Chart of Accounts</div>
+      <div class="nav-item" id="nav-gl" onclick="nav('gl')"><i class="ti ti-book-2"></i>General Ledger</div>
+      <div class="nav-item" id="nav-journals" onclick="nav('journals')"><i class="ti ti-pencil"></i>Journal Entries</div>
+
+      <div class="nav-section">Receivables & Payables</div>
+      <div class="nav-item" id="nav-ar" onclick="nav('ar')"><i class="ti ti-arrow-down-circle"></i>Accounts Receivable <span class="nav-badge">12</span></div>
+      <div class="nav-item" id="nav-ap" onclick="nav('ap')"><i class="ti ti-arrow-up-circle"></i>Accounts Payable <span class="nav-badge amber">7</span></div>
+      <div class="nav-item" id="nav-cashbook" onclick="nav('cashbook')"><i class="ti ti-wallet"></i>Cashbook & Bank</div>
+
+      <div class="nav-section">Planning</div>
+      <div class="nav-item" id="nav-budget" onclick="nav('budget')"><i class="ti ti-target"></i>Budgets</div>
+      <div class="nav-item" id="nav-forecast" onclick="nav('forecast')"><i class="ti ti-trending-up"></i>Forecasting</div>
+
+      <div class="nav-section">Operations</div>
+      <div class="nav-item" id="nav-payroll" onclick="nav('payroll')"><i class="ti ti-users"></i>Payroll</div>
+      <div class="nav-item" id="nav-assets" onclick="nav('assets')"><i class="ti ti-building-warehouse"></i>Fixed Assets</div>
+      <div class="nav-item" id="nav-inventory" onclick="nav('inventory')"><i class="ti ti-box"></i>Inventory</div>
+
+      <div class="nav-section">Compliance</div>
+      <div class="nav-item" id="nav-tax" onclick="nav('tax')"><i class="ti ti-receipt-tax"></i>Taxation</div>
+      <div class="nav-item" id="nav-reports" onclick="nav('reports')"><i class="ti ti-chart-bar"></i>Reports</div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="avatar">KA</div>
+        <div style="flex:1">
+          <div class="user-name">Kwame Asante</div>
+          <div class="user-role">Finance Director</div>
+        </div>
+        <i class="ti ti-settings" style="font-size:16px;color:var(--text3);cursor:pointer;" onclick="showToast('Settings panel coming soon','info')"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Executive Dashboard</div>
+      <div class="topbar-badge" id="liveClock">—</div>
+      <div class="topbar-badge" style="color:var(--green)"><i class="ti ti-circle-filled" style="font-size:8px;margin-right:4px;"></i>LIVE</div>
+      <button class="btn-outline" onclick="openNewEntry()"><i class="ti ti-plus"></i> New Entry</button>
+      <button class="btn-primary" onclick="exportPDF()"><i class="ti ti-download"></i> Export</button>
+    </div>
+
+    <div class="content" id="mainContent">
+
+      <!-- ════ DASHBOARD ════ -->
+      <div class="view active" id="view-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="ti ti-currency-dollar"></i>Total Revenue</div>
+            <div class="kpi-value" id="d-rev">GH₵ 847K</div>
+            <div class="kpi-delta up"><i class="ti ti-trending-up" style="font-size:10px"></i> +18.4% vs prior</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="ti ti-chart-line"></i>Net Profit</div>
+            <div class="kpi-value">GH₵ 213K</div>
+            <div class="kpi-delta up"><i class="ti ti-trending-up" style="font-size:10px"></i> +9.2% margin</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="ti ti-wallet"></i>Cash Balance</div>
+            <div class="kpi-value" id="d-cash">GH₵ 392K</div>
+            <div class="kpi-delta down"><i class="ti ti-trending-down" style="font-size:10px"></i> −4.1% this month</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label"><i class="ti ti-scale"></i>Current Ratio</div>
+            <div class="kpi-value">2.4×</div>
+            <div class="kpi-delta neutral">Healthy liquidity</div>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="panel">
+            <div class="panel-header">
+              <div><div class="panel-title">Revenue vs Expenses vs Budget</div><div class="panel-sub">Jan – Jun 2025 · GH₵ thousands</div></div>
+              <div class="flex-gap">
+                <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)"><span style="width:10px;height:3px;background:var(--green);border-radius:2px;display:inline-block;"></span>Revenue</span>
+                <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)"><span style="width:10px;height:3px;background:var(--red);border-radius:2px;display:inline-block;"></span>Expenses</span>
+                <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)"><span style="width:10px;height:3px;background:var(--blue);border-radius:2px;display:inline-block;border-top:2px dashed var(--blue);"></span>Budget</span>
+              </div>
+            </div>
+            <div class="chart-wrap" style="height:200px"><canvas id="revenueChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Cash Inflow Mix</div></div>
+            <div style="display:flex;gap:14px;margin-bottom:10px;flex-wrap:wrap;">
+              <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:9px;height:9px;background:var(--green);border-radius:2px;display:inline-block;"></span>Sales 48%</span>
+              <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:9px;height:9px;background:var(--blue);border-radius:2px;display:inline-block;"></span>Rental 28%</span>
+              <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)"><span style="width:9px;height:9px;background:var(--purple);border-radius:2px;display:inline-block;"></span>Services 24%</span>
+            </div>
+            <div class="chart-wrap" style="height:200px"><canvas id="donutChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="bottom-row">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Recent Invoices</div><button class="panel-link" onclick="nav('ar')">View all →</button></div>
+            <table class="data-table">
+              <thead><tr><th>Customer</th><th>Amount</th><th>Due</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Accra Properties Ltd</td><td class="mono">42,500</td><td class="muted">12 Jun</td><td><span class="pill pill-paid">Paid</span></td></tr>
+                <tr><td>Tema Trading Co.</td><td class="mono">18,750</td><td class="muted">20 Jun</td><td><span class="pill pill-due">Due</span></td></tr>
+                <tr><td>Kumasi Logistics</td><td class="mono">31,200</td><td class="muted red">08 Jun</td><td><span class="pill pill-overdue">Overdue</span></td></tr>
+                <tr><td>OmniServ GH</td><td class="mono">9,840</td><td class="muted">30 Jun</td><td><span class="pill pill-draft">Draft</span></td></tr>
+                <tr><td>Delta Retail Group</td><td class="mono">27,100</td><td class="muted">15 Jun</td><td><span class="pill pill-paid">Paid</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Budget Utilization — Jun 2025</div><button class="panel-link" onclick="nav('budget')">Details →</button></div>
+            <div class="prog-item"><div class="prog-header"><span class="prog-label">Salaries & Payroll</span><span class="prog-pct">88%</span></div><div class="prog-track"><div class="prog-fill" style="width:88%;background:var(--green)"></div></div></div>
+            <div class="prog-item"><div class="prog-header"><span class="prog-label">Marketing & Sales</span><span class="prog-pct">87%</span></div><div class="prog-track"><div class="prog-fill" style="width:87%;background:var(--green)"></div></div></div>
+            <div class="prog-item"><div class="prog-header"><span class="prog-label">Operations & Admin</span><span class="prog-pct">98%</span></div><div class="prog-track"><div class="prog-fill" style="width:98%;background:var(--amber)"></div></div></div>
+            <div class="prog-item"><div class="prog-header"><span class="prog-label">Utilities & Overhead</span><span class="prog-pct">83%</span></div><div class="prog-track"><div class="prog-fill" style="width:83%;background:var(--green)"></div></div></div>
+            <div class="prog-item"><div class="prog-header"><span class="prog-label">Capital Expenditure</span><span class="prog-pct" style="color:var(--red)">112% ⚠</span></div><div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--red)"></div></div></div>
+          </div>
+        </div>
+
+        <div class="ai-bar">
+          <div class="ai-bar-icon"><i class="ti ti-robot"></i></div>
+          <div style="flex:1">
+            <div class="ai-bar-title">AI Financial Insight — June 2025</div>
+            <div class="ai-bar-text" id="aiInsight">Revenue increased by 18.4% compared to the prior period, driven by improved collections and new service contracts in Q2. Capital expenditure has exceeded budget by 12% — a revised spending approval is recommended before month-end. Operating cash position remains healthy at GH₵ 392K with a current ratio of 2.4×. Three receivables are overdue totalling GH₵ 68K; automated reminders have been queued.</div>
+          </div>
+          <button class="btn-outline" style="flex-shrink:0;margin-top:2px" onclick="refreshInsight()"><i class="ti ti-refresh"></i> Refresh</button>
+        </div>
+      </div>
+
+      <!-- ════ CHART OF ACCOUNTS ════ -->
+      <div class="view" id="view-coa">
+        <div class="flex-gap" style="justify-content:space-between">
+          <div>
+            <div class="section-title">Chart of Accounts</div>
+            <div class="panel-sub">IFRS-compliant · Double-entry structure</div>
+          </div>
+          <button class="btn-primary" onclick="openNewAccount()"><i class="ti ti-plus"></i> New Account</button>
+        </div>
+        <div class="panel">
+          <div class="coa-tree" id="coaTree"></div>
+        </div>
+      </div>
+
+      <!-- ════ GENERAL LEDGER ════ -->
+      <div class="view" id="view-gl">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-arrows-exchange"></i>Total Debits</div><div class="kpi-value">GH₵ 1.24M</div><div class="kpi-delta neutral">This period</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-arrows-exchange"></i>Total Credits</div><div class="kpi-value">GH₵ 1.24M</div><div class="kpi-delta up">✓ Balanced</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-check"></i>Journals Posted</div><div class="kpi-value">1,847</div><div class="kpi-delta neutral">4 pending</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-alert-triangle"></i>AI Anomalies</div><div class="kpi-value">3</div><div class="kpi-delta down">Review needed</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">General Ledger — Journal Entries</div><button class="btn-outline" onclick="showTrialBalance()"><i class="ti ti-scale"></i> Trial Balance</button></div>
+          <div class="scroll-x">
+          <table class="data-table" style="min-width:700px">
+            <thead><tr><th>Date</th><th>Ref</th><th>Account</th><th>Narration</th><th style="text-align:right">Debit (GH₵)</th><th style="text-align:right">Credit (GH₵)</th><th>Status</th></tr></thead>
+            <tbody id="glBody"></tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ JOURNAL ENTRIES ════ -->
+      <div class="view" id="view-journals">
+        <div class="flex-gap" style="justify-content:space-between">
+          <div><div class="section-title">Journal Entry Management</div><div class="panel-sub">Post, reverse & approve transactions</div></div>
+          <button class="btn-primary" onclick="openNewEntry()"><i class="ti ti-plus"></i> New Journal</button>
+        </div>
+        <div class="kpi-grid-3">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-check"></i>Posted Today</div><div class="kpi-value">24</div><div class="kpi-delta up">Auto-balanced</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-clock"></i>Pending Approval</div><div class="kpi-value">4</div><div class="kpi-delta neutral">Awaiting review</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-rotate"></i>Recurring Active</div><div class="kpi-value">11</div><div class="kpi-delta neutral">Next: 30 Jun</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Recent Journal Vouchers</div></div>
+          <table class="data-table">
+            <thead><tr><th>Ref</th><th>Date</th><th>Narration</th><th>Debit Acct</th><th>Credit Acct</th><th style="text-align:right">Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">JV-0048</td><td class="muted">10 Jun</td><td>Prepaid insurance adjustment</td><td>5300</td><td>1400</td><td class="mono" style="text-align:right">8,400</td><td><span class="pill pill-paid">Posted</span></td></tr>
+              <tr><td class="mono">JV-0047</td><td class="muted">09 Jun</td><td>Depreciation — vehicles</td><td>6200</td><td>1600</td><td class="mono" style="text-align:right">6,250</td><td><span class="pill pill-paid">Posted</span></td></tr>
+              <tr><td class="mono">JV-0046</td><td class="muted">08 Jun</td><td>Accrued utility expense</td><td>5800</td><td>2300</td><td class="mono" style="text-align:right">14,200</td><td><span class="pill pill-approved">Approved</span></td></tr>
+              <tr><td class="mono">JV-0045</td><td class="muted">07 Jun</td><td>WHT payable remittance</td><td>2500</td><td>1000</td><td class="mono" style="text-align:right">22,800</td><td><span class="pill pill-due">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ ACCOUNTS RECEIVABLE ════ -->
+      <div class="view" id="view-ar">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-clock"></i>Total Outstanding</div><div class="kpi-value">GH₵ 312K</div><div class="kpi-delta down">12 invoices</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-alert-triangle"></i>Overdue</div><div class="kpi-value">GH₵ 68K</div><div class="kpi-delta down">3 accounts</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-trending-up"></i>Collection Rate</div><div class="kpi-value">84.2%</div><div class="kpi-delta up">+3.1% vs target</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-calendar"></i>Avg Days Outstanding</div><div class="kpi-value">34 days</div><div class="kpi-delta neutral">Target: 30</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Debtor Aging Analysis</div><button class="btn-outline" onclick="showToast('Reminder emails sent to 3 overdue customers ✓','success')"><i class="ti ti-mail"></i> Send Reminders</button></div>
+          <div class="chart-wrap" style="height:220px"><canvas id="agingChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Customer Invoice Register</div><button class="btn-primary" onclick="openNewInvoice()"><i class="ti ti-plus"></i> New Invoice</button></div>
+          <table class="data-table">
+            <thead><tr><th>Customer</th><th>Invoice #</th><th style="text-align:right">Amount</th><th>Issue Date</th><th>Due Date</th><th>Aging</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Accra Properties Ltd</td><td class="mono">INV-2241</td><td class="mono" style="text-align:right">42,500</td><td class="muted">01 Jun</td><td class="muted">12 Jun</td><td><span class="tag">0–30</span></td><td><span class="pill pill-paid">Paid</span></td></tr>
+              <tr><td>Tema Trading Co.</td><td class="mono">INV-2242</td><td class="mono" style="text-align:right">18,750</td><td class="muted">05 Jun</td><td class="muted">20 Jun</td><td><span class="tag">0–30</span></td><td><span class="pill pill-due">Due</span></td></tr>
+              <tr><td>Kumasi Logistics</td><td class="mono">INV-2238</td><td class="mono" style="text-align:right">31,200</td><td class="muted">22 May</td><td class="muted red">08 Jun</td><td><span class="tag" style="background:rgba(240,82,82,.1);color:var(--red)">31–60</span></td><td><span class="pill pill-overdue">Overdue</span></td></tr>
+              <tr><td>OmniServ GH</td><td class="mono">INV-2244</td><td class="mono" style="text-align:right">9,840</td><td class="muted">10 Jun</td><td class="muted">30 Jun</td><td><span class="tag">0–30</span></td><td><span class="pill pill-draft">Draft</span></td></tr>
+              <tr><td>Delta Retail Group</td><td class="mono">INV-2240</td><td class="mono" style="text-align:right">27,100</td><td class="muted">28 May</td><td class="muted">15 Jun</td><td><span class="tag">0–30</span></td><td><span class="pill pill-paid">Paid</span></td></tr>
+              <tr><td>Koforidua Services</td><td class="mono">INV-2231</td><td class="mono" style="text-align:right">22,800</td><td class="muted">30 Apr</td><td class="muted red">30 May</td><td><span class="tag" style="background:rgba(240,82,82,.1);color:var(--red)">60–90</span></td><td><span class="pill pill-overdue">Overdue</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ ACCOUNTS PAYABLE ════ -->
+      <div class="view" id="view-ap">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-clock"></i>Total Payables</div><div class="kpi-value">GH₵ 198K</div><div class="kpi-delta neutral">7 vendors</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-alert-circle"></i>Due This Week</div><div class="kpi-value">GH₵ 47K</div><div class="kpi-delta down">Action needed</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-check"></i>Approved Payments</div><div class="kpi-value">GH₵ 83K</div><div class="kpi-delta neutral">Awaiting release</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-calendar"></i>Avg Payment Days</div><div class="kpi-value">28 days</div><div class="kpi-delta up">On schedule</div></div>
+        </div>
+        <div class="bottom-row">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Vendor Payment Schedule</div><button class="btn-primary" onclick="showToast('Payment batch GH₵ 47,200 queued for approval','info')"><i class="ti ti-send"></i> Batch Pay</button></div>
+            <table class="data-table">
+              <thead><tr><th>Vendor</th><th>Invoice</th><th style="text-align:right">Amount</th><th>Due</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Ghana Power Supply</td><td class="mono">GPW-4421</td><td class="mono" style="text-align:right">14,200</td><td class="red">10 Jun</td><td><span class="pill pill-overdue">Overdue</span></td></tr>
+                <tr><td>Consolidated Office</td><td class="mono">COS-8812</td><td class="mono" style="text-align:right">8,750</td><td class="amber">14 Jun</td><td><span class="pill pill-due">Due</span></td></tr>
+                <tr><td>Tech Infrastructure</td><td class="mono">TIL-2209</td><td class="mono" style="text-align:right">52,000</td><td class="muted">20 Jun</td><td><span class="pill pill-approved">Approved</span></td></tr>
+                <tr><td>SSNIT Contributions</td><td class="mono">SSN-0931</td><td class="mono" style="text-align:right">18,400</td><td class="muted">28 Jun</td><td><span class="pill pill-draft">Scheduled</span></td></tr>
+                <tr><td>Kofi Transport</td><td class="mono">KTS-1103</td><td class="mono" style="text-align:right">11,100</td><td class="muted">30 Jun</td><td><span class="pill pill-draft">Scheduled</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Payables Aging</div></div>
+            <div class="chart-wrap" style="height:260px"><canvas id="apAgingChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ CASHBOOK ════ -->
+      <div class="view" id="view-cashbook">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-wallet"></i>Bank Balance</div><div class="kpi-value" id="cbBal">GH₵ 392,140</div><div class="kpi-delta up">Reconciled ✓</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-arrow-down-circle"></i>Inflows (Jun)</div><div class="kpi-value">GH₵ 218K</div><div class="kpi-delta up">+12% MoM</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-arrow-up-circle"></i>Outflows (Jun)</div><div class="kpi-value">GH₵ 183K</div><div class="kpi-delta neutral">Within budget</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-check"></i>Reconciliation</div><div class="kpi-value">Matched</div><div class="kpi-delta up">0 exceptions</div></div>
+        </div>
+        <div class="bottom-row">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Bank Transactions</div><button class="btn-outline" onclick="showToast('Bank reconciliation complete — 0 unmatched items','success')"><i class="ti ti-refresh"></i> Reconcile</button></div>
+            <table class="data-table">
+              <thead><tr><th>Date</th><th>Narration</th><th>Type</th><th style="text-align:right">Amount</th><th style="text-align:right">Balance</th></tr></thead>
+              <tbody id="cbBody"></tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Daily Cash Flow — Jun 2025</div></div>
+            <div class="chart-wrap" style="height:260px"><canvas id="cashflowChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ BUDGET ════ -->
+      <div class="view" id="view-budget">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-target"></i>Annual Budget</div><div class="kpi-value">GH₵ 2.1M</div><div class="kpi-delta neutral">FY 2025</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-check"></i>YTD Actual</div><div class="kpi-value">GH₵ 847K</div><div class="kpi-delta up">40.3% utilized</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-alert-triangle"></i>Over Budget</div><div class="kpi-value">2 lines</div><div class="kpi-delta down">CapEx + Admin</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-versions"></i>Budget Version</div><div class="kpi-value">Rev 2</div><div class="kpi-delta neutral">Apr 2025</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Budget vs Actual — Departmental</div></div>
+          <div class="chart-wrap" style="height:240px"><canvas id="budgetChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Budget Line Detail</div><button class="btn-primary" onclick="showToast('Budget revision v3 draft created','info')"><i class="ti ti-edit"></i> Revise Budget</button></div>
+          <table class="data-table">
+            <thead><tr><th>Cost Centre</th><th style="text-align:right">Annual Budget</th><th style="text-align:right">YTD Budget</th><th style="text-align:right">YTD Actual</th><th style="text-align:right">Variance</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Salaries & Payroll</td><td class="mono" style="text-align:right">420,000</td><td class="mono" style="text-align:right">210,000</td><td class="mono" style="text-align:right">185,000</td><td class="mono green" style="text-align:right">+25,000</td><td><span class="pill pill-paid">On Track</span></td></tr>
+              <tr><td>Marketing & Sales</td><td class="mono" style="text-align:right">120,000</td><td class="mono" style="text-align:right">60,000</td><td class="mono" style="text-align:right">52,000</td><td class="mono green" style="text-align:right">+8,000</td><td><span class="pill pill-paid">On Track</span></td></tr>
+              <tr><td>Operations & Admin</td><td class="mono" style="text-align:right">160,000</td><td class="mono" style="text-align:right">80,000</td><td class="mono" style="text-align:right">78,000</td><td class="mono green" style="text-align:right">+2,000</td><td><span class="pill pill-due">Near Limit</span></td></tr>
+              <tr><td>Capital Expenditure</td><td class="mono" style="text-align:right">200,000</td><td class="mono" style="text-align:right">100,000</td><td class="mono" style="text-align:right">112,000</td><td class="mono red" style="text-align:right">−12,000</td><td><span class="pill pill-overdue">Over Budget</span></td></tr>
+              <tr><td>IT & Systems</td><td class="mono" style="text-align:right">80,000</td><td class="mono" style="text-align:right">40,000</td><td class="mono" style="text-align:right">31,000</td><td class="mono green" style="text-align:right">+9,000</td><td><span class="pill pill-paid">On Track</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ FORECAST ════ -->
+      <div class="view" id="view-forecast">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-trending-up"></i>Projected Revenue</div><div class="kpi-value">GH₵ 1.71M</div><div class="kpi-delta up">FY 2025 base case</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-wallet"></i>Projected Cash Dec</div><div class="kpi-value">GH₵ 510K</div><div class="kpi-delta up">+30% vs today</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-chart-line"></i>Projected Net Margin</div><div class="kpi-value">24.8%</div><div class="kpi-delta neutral">Base case</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-robot"></i>AI Confidence</div><div class="kpi-value">83%</div><div class="kpi-delta up">High confidence</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div><div class="panel-title">Cash Flow Forecast — Jul to Dec 2025</div><div class="panel-sub">Three-scenario AI model · GH₵ thousands</div></div>
+            <div class="flex-gap">
+              <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)"><span style="width:10px;height:3px;background:var(--green);border-radius:2px;display:inline-block;"></span>Base</span>
+              <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)"><span style="width:10px;height:3px;background:var(--blue);border-radius:2px;display:inline-block;"></span>Best</span>
+              <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)"><span style="width:10px;height:3px;background:var(--red);border-radius:2px;display:inline-block;"></span>Worst</span>
+            </div>
+          </div>
+          <div class="chart-wrap" style="height:240px"><canvas id="forecastChart"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Revenue Forecast by Stream</div></div>
+          <div class="chart-wrap" style="height:200px"><canvas id="revForecastChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ════ PAYROLL ════ -->
+      <div class="view" id="view-payroll">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-users"></i>Total Employees</div><div class="kpi-value">42</div><div class="kpi-delta neutral">Active staff</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-currency-dollar"></i>Gross Payroll (Jun)</div><div class="kpi-value">GH₵ 96K</div><div class="kpi-delta neutral">Before deductions</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-receipt-tax"></i>PAYE (Jun)</div><div class="kpi-value">GH₵ 14.2K</div><div class="kpi-delta neutral">GRA remittable</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-building-bank"></i>SSNIT (Jun)</div><div class="kpi-value">GH₵ 9.6K</div><div class="kpi-delta neutral">13.5% employer</div></div>
+        </div>
+        <div class="bottom-row">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Payroll Register — June 2025</div><button class="btn-primary" onclick="showToast('Payroll approved and queued for disbursement','success')"><i class="ti ti-check"></i> Approve Payroll</button></div>
+            <table class="data-table">
+              <thead><tr><th>Employee</th><th>Dept</th><th style="text-align:right">Basic</th><th style="text-align:right">PAYE</th><th style="text-align:right">SSNIT</th><th style="text-align:right">Net Pay</th></tr></thead>
+              <tbody>
+                <tr><td>Ama Mensah</td><td class="muted">Finance</td><td class="mono" style="text-align:right">4,800</td><td class="mono red" style="text-align:right">720</td><td class="mono red" style="text-align:right">480</td><td class="mono green" style="text-align:right">3,600</td></tr>
+                <tr><td>Kofi Agyeman</td><td class="muted">Operations</td><td class="mono" style="text-align:right">3,200</td><td class="mono red" style="text-align:right">384</td><td class="mono red" style="text-align:right">320</td><td class="mono green" style="text-align:right">2,496</td></tr>
+                <tr><td>Efua Boateng</td><td class="muted">Sales</td><td class="mono" style="text-align:right">3,600</td><td class="mono red" style="text-align:right">468</td><td class="mono red" style="text-align:right">360</td><td class="mono green" style="text-align:right">2,772</td></tr>
+                <tr><td>Yaw Darko</td><td class="muted">IT</td><td class="mono" style="text-align:right">5,200</td><td class="mono red" style="text-align:right">832</td><td class="mono red" style="text-align:right">520</td><td class="mono green" style="text-align:right">3,848</td></tr>
+                <tr><td>Akosua Asante</td><td class="muted">Admin</td><td class="mono" style="text-align:right">2,800</td><td class="mono red" style="text-align:right">280</td><td class="mono red" style="text-align:right">280</td><td class="mono green" style="text-align:right">2,240</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Payroll Cost Breakdown</div></div>
+            <div class="chart-wrap" style="height:260px"><canvas id="payrollChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ FIXED ASSETS ════ -->
+      <div class="view" id="view-assets">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-building-warehouse"></i>Total Assets</div><div class="kpi-value">GH₵ 1.42M</div><div class="kpi-delta neutral">Cost value</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-minus-vertical"></i>Accum. Depreciation</div><div class="kpi-value">GH₵ 384K</div><div class="kpi-delta neutral">To date</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-chart-line"></i>Net Book Value</div><div class="kpi-value">GH₵ 1.04M</div><div class="kpi-delta neutral">Carrying value</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-calendar"></i>Monthly Dep. Charge</div><div class="kpi-value">GH₵ 12.3K</div><div class="kpi-delta neutral">Auto-posted</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Fixed Asset Register</div><button class="btn-primary" onclick="showToast('Depreciation run complete for June 2025','success')"><i class="ti ti-rotate"></i> Run Depreciation</button></div>
+          <table class="data-table">
+            <thead><tr><th>Asset</th><th>Category</th><th style="text-align:right">Cost (GH₵)</th><th style="text-align:right">Accum Dep.</th><th style="text-align:right">NBV</th><th>Method</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Toyota Hilux × 2</td><td class="muted">Motor Vehicles</td><td class="mono" style="text-align:right">180,000</td><td class="mono" style="text-align:right">54,000</td><td class="mono" style="text-align:right">126,000</td><td><span class="tag">SLM 20%</span></td><td><span class="pill pill-paid">Active</span></td></tr>
+              <tr><td>Office Building</td><td class="muted">Property</td><td class="mono" style="text-align:right">650,000</td><td class="mono" style="text-align:right">195,000</td><td class="mono" style="text-align:right">455,000</td><td><span class="tag">SLM 4%</span></td><td><span class="pill pill-paid">Active</span></td></tr>
+              <tr><td>Server & IT Equipment</td><td class="muted">IT Assets</td><td class="mono" style="text-align:right">88,000</td><td class="mono" style="text-align:right">52,800</td><td class="mono" style="text-align:right">35,200</td><td><span class="tag">DBD 33%</span></td><td><span class="pill pill-paid">Active</span></td></tr>
+              <tr><td>Furniture & Fittings</td><td class="muted">F&F</td><td class="mono" style="text-align:right">42,000</td><td class="mono" style="text-align:right">16,800</td><td class="mono" style="text-align:right">25,200</td><td><span class="tag">SLM 10%</span></td><td><span class="pill pill-paid">Active</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ INVENTORY ════ -->
+      <div class="view" id="view-inventory">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-box"></i>Total SKUs</div><div class="kpi-value">184</div><div class="kpi-delta neutral">Active items</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-currency-dollar"></i>Stock Value</div><div class="kpi-value">GH₵ 228K</div><div class="kpi-delta neutral">At cost (FIFO)</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-alert-triangle"></i>Low Stock Alerts</div><div class="kpi-value">8</div><div class="kpi-delta down">Reorder needed</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-rotate"></i>Avg Turnover</div><div class="kpi-value">4.2×</div><div class="kpi-delta up">per annum</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Inventory Register</div><button class="btn-outline" onclick="showToast('Purchase orders raised for 8 low-stock items','info')"><i class="ti ti-shopping-cart"></i> Auto Reorder</button></div>
+          <table class="data-table">
+            <thead><tr><th>Item</th><th>Category</th><th style="text-align:right">On Hand</th><th style="text-align:right">Reorder Pt</th><th style="text-align:right">Unit Cost</th><th style="text-align:right">Total Value</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Office Paper A4 (ream)</td><td class="muted">Stationery</td><td class="mono" style="text-align:right">240</td><td class="mono" style="text-align:right">100</td><td class="mono" style="text-align:right">12.50</td><td class="mono" style="text-align:right">3,000</td><td><span class="inv-badge inv-ok"><i class="ti ti-circle-filled" style="font-size:7px"></i> OK</span></td></tr>
+              <tr><td>Printer Cartridge (HP)</td><td class="muted">IT Supplies</td><td class="mono" style="text-align:right">12</td><td class="mono" style="text-align:right">20</td><td class="mono" style="text-align:right">185</td><td class="mono" style="text-align:right">2,220</td><td><span class="inv-badge inv-low"><i class="ti ti-alert-triangle" style="font-size:9px"></i> Low</span></td></tr>
+              <tr><td>Safety Equipment Kit</td><td class="muted">Operations</td><td class="mono" style="text-align:right">5</td><td class="mono" style="text-align:right">15</td><td class="mono" style="text-align:right">340</td><td class="mono" style="text-align:right">1,700</td><td><span class="inv-badge inv-low"><i class="ti ti-alert-triangle" style="font-size:9px"></i> Low</span></td></tr>
+              <tr><td>Generator Diesel (L)</td><td class="muted">Fuel</td><td class="mono" style="text-align:right">0</td><td class="mono" style="text-align:right">200</td><td class="mono" style="text-align:right">14.80</td><td class="mono" style="text-align:right">0</td><td><span class="inv-badge inv-out"><i class="ti ti-x" style="font-size:9px"></i> Out</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ TAXATION ════ -->
+      <div class="view" id="view-tax">
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-receipt-tax"></i>VAT Payable (Jun)</div><div class="kpi-value">GH₵ 21.8K</div><div class="kpi-delta down">Due 30 Jun</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-percent"></i>WHT Payable</div><div class="kpi-value">GH₵ 8.4K</div><div class="kpi-delta neutral">15th due</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-users"></i>PAYE Payable</div><div class="kpi-value">GH₵ 14.2K</div><div class="kpi-delta neutral">7th due</div></div>
+          <div class="kpi-card"><div class="kpi-label"><i class="ti ti-building-bank"></i>Corporate Tax Est.</div><div class="kpi-value">GH₵ 53K</div><div class="kpi-delta neutral">FY provision</div></div>
+        </div>
+        <div class="bottom-row">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">VAT Report — June 2025</div><button class="btn-primary" onclick="showToast('VAT return filed to GRA ✓','success')"><i class="ti ti-send"></i> File to GRA</button></div>
+            <div class="fs-report">
+              <div class="fs-head">VAT on Sales (Output Tax)</div>
+              <div class="fs-row indent"><span>Standard rated sales (15%)</span><span>145,200</span></div>
+              <div class="fs-row indent"><span>Zero-rated sales</span><span>22,400</span></div>
+              <div class="fs-row total"><span>Total Output VAT</span><span>21,780</span></div>
+              <br>
+              <div class="fs-head">VAT on Purchases (Input Tax)</div>
+              <div class="fs-row indent"><span>Input VAT claimable</span><span>(8,240)</span></div>
+              <div class="fs-row total"><span>Net VAT Payable</span><span>13,540</span></div>
+              <div class="fs-row grand"><span>NHIL + GETFund + CHRL</span><span>8,260</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Tax Calendar — Q2 2025</div></div>
+            <table class="data-table">
+              <thead><tr><th>Tax Type</th><th>Period</th><th>Due Date</th><th style="text-align:right">Amount</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>PAYE</td><td class="muted">May 2025</td><td class="muted">07 Jun</td><td class="mono" style="text-align:right">13,840</td><td><span class="pill pill-paid">Filed</span></td></tr>
+                <tr><td>VAT</td><td class="muted">May 2025</td><td class="muted">30 Jun</td><td class="mono" style="text-align:right">21,780</td><td><span class="pill pill-due">Pending</span></td></tr>
+                <tr><td>WHT</td><td class="muted">Jun 2025</td><td class="muted">15 Jul</td><td class="mono" style="text-align:right">8,400</td><td><span class="pill pill-draft">Not Due</span></td></tr>
+                <tr><td>SSNIT</td><td class="muted">Jun 2025</td><td class="muted">14 Jul</td><td class="mono" style="text-align:right">9,600</td><td><span class="pill pill-draft">Not Due</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ REPORTS ════ -->
+      <div class="view" id="view-reports">
+        <div class="tabs" id="reportTabs">
+          <button class="tab active" onclick="showReport('pnl',this)">Income Statement</button>
+          <button class="tab" onclick="showReport('bs',this)">Balance Sheet</button>
+          <button class="tab" onclick="showReport('cf',this)">Cash Flow</button>
+          <button class="tab" onclick="showReport('tb',this)">Trial Balance</button>
+        </div>
+
+        <div id="report-pnl" class="panel">
+          <div class="panel-header"><div class="panel-title">Statement of Profit or Loss — H1 2025</div><button class="btn-outline" onclick="exportPDF()"><i class="ti ti-download"></i> Export PDF</button></div>
+          <div class="fs-report">
+            <div class="fs-head">Revenue</div>
+            <div class="fs-row indent"><span>Sales Revenue</span><span>406,800</span></div>
+            <div class="fs-row indent"><span>Rental Income</span><span>237,160</span></div>
+            <div class="fs-row indent"><span>Service Revenue</span><span>203,040</span></div>
+            <div class="fs-row total"><span>Total Revenue</span><span>847,000</span></div>
+            <br>
+            <div class="fs-head">Cost of Sales</div>
+            <div class="fs-row indent"><span>Direct Materials</span><span>(184,200)</span></div>
+            <div class="fs-row indent"><span>Direct Labour</span><span>(96,400)</span></div>
+            <div class="fs-row total"><span>Gross Profit</span><span>566,400</span></div>
+            <br>
+            <div class="fs-head">Operating Expenses</div>
+            <div class="fs-row indent"><span>Salaries & Staff Costs</span><span>(185,000)</span></div>
+            <div class="fs-row indent"><span>Depreciation</span><span>(73,800)</span></div>
+            <div class="fs-row indent"><span>Marketing & Sales</span><span>(52,000)</span></div>
+            <div class="fs-row indent"><span>Admin & General</span><span>(28,400)</span></div>
+            <div class="fs-row indent"><span>Finance Costs</span><span>(14,200)</span></div>
+            <div class="fs-row total"><span>Operating Profit (EBIT)</span><span>213,000</span></div>
+            <br>
+            <div class="fs-row indent"><span>Tax Provision (25%)</span><span>(53,250)</span></div>
+            <div class="fs-row grand"><span>Net Profit After Tax</span><span>159,750</span></div>
+          </div>
+        </div>
+
+        <div id="report-bs" class="panel" style="display:none">
+          <div class="panel-header"><div class="panel-title">Statement of Financial Position — 30 June 2025</div><button class="btn-outline" onclick="exportPDF()"><i class="ti ti-download"></i> Export PDF</button></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px" class="fs-report">
+            <div>
+              <div class="fs-head">Assets</div>
+              <div class="fs-row"><span style="font-weight:600">Non-Current Assets</span><span></span></div>
+              <div class="fs-row indent"><span>Property, Plant & Equipment</span><span>1,036,000</span></div>
+              <div class="fs-row indent"><span>Intangibles</span><span>42,000</span></div>
+              <div class="fs-row total"><span>Total Non-Current</span><span>1,078,000</span></div>
+              <br>
+              <div class="fs-row"><span style="font-weight:600">Current Assets</span><span></span></div>
+              <div class="fs-row indent"><span>Cash & Bank</span><span>392,140</span></div>
+              <div class="fs-row indent"><span>Trade Receivables</span><span>312,000</span></div>
+              <div class="fs-row indent"><span>Inventory</span><span>228,000</span></div>
+              <div class="fs-row indent"><span>Prepayments</span><span>48,400</span></div>
+              <div class="fs-row total"><span>Total Current</span><span>980,540</span></div>
+              <div class="fs-row grand"><span>Total Assets</span><span>2,058,540</span></div>
+            </div>
+            <div>
+              <div class="fs-head">Equity & Liabilities</div>
+              <div class="fs-row"><span style="font-weight:600">Equity</span><span></span></div>
+              <div class="fs-row indent"><span>Share Capital</span><span>500,000</span></div>
+              <div class="fs-row indent"><span>Retained Earnings</span><span>778,540</span></div>
+              <div class="fs-row indent"><span>Current Year Profit</span><span>159,750</span></div>
+              <div class="fs-row total"><span>Total Equity</span><span>1,438,290</span></div>
+              <br>
+              <div class="fs-row"><span style="font-weight:600">Non-Current Liabilities</span><span></span></div>
+              <div class="fs-row indent"><span>Long-term Loans</span><span>214,000</span></div>
+              <br>
+              <div class="fs-row"><span style="font-weight:600">Current Liabilities</span><span></span></div>
+              <div class="fs-row indent"><span>Trade Payables</span><span>198,000</span></div>
+              <div class="fs-row indent"><span>Tax Payables</span><span>43,580</span></div>
+              <div class="fs-row indent"><span>Accruals</span><span>164,670</span></div>
+              <div class="fs-row total"><span>Total Liabilities</span><span>620,250</span></div>
+              <div class="fs-row grand"><span>Total Equity & Liabilities</span><span>2,058,540</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="report-cf" class="panel" style="display:none">
+          <div class="panel-header"><div class="panel-title">Cash Flow Statement (Indirect) — H1 2025</div><button class="btn-outline" onclick="exportPDF()"><i class="ti ti-download"></i> Export PDF</button></div>
+          <div class="fs-report">
+            <div class="fs-head">Operating Activities</div>
+            <div class="fs-row indent"><span>Net Profit Before Tax</span><span>213,000</span></div>
+            <div class="fs-row indent"><span>Add: Depreciation</span><span>73,800</span></div>
+            <div class="fs-row indent"><span>Increase in Trade Payables</span><span>28,400</span></div>
+            <div class="fs-row indent"><span>Decrease in Receivables</span><span>14,200</span></div>
+            <div class="fs-row indent"><span>Increase in Inventory</span><span>(42,000)</span></div>
+            <div class="fs-row indent"><span>Tax Paid</span><span>(38,400)</span></div>
+            <div class="fs-row total"><span>Net Cash from Operations</span><span>249,000</span></div>
+            <br>
+            <div class="fs-head">Investing Activities</div>
+            <div class="fs-row indent"><span>Purchase of Fixed Assets</span><span>(112,000)</span></div>
+            <div class="fs-row total"><span>Net Cash from Investing</span><span>(112,000)</span></div>
+            <br>
+            <div class="fs-head">Financing Activities</div>
+            <div class="fs-row indent"><span>Loan Repayments</span><span>(48,000)</span></div>
+            <div class="fs-row total"><span>Net Cash from Financing</span><span>(48,000)</span></div>
+            <br>
+            <div class="fs-row grand"><span>Net Increase in Cash</span><span>89,000</span></div>
+            <div class="fs-row indent"><span>Opening Cash Balance</span><span>303,140</span></div>
+            <div class="fs-row grand"><span>Closing Cash Balance</span><span>392,140</span></div>
+          </div>
+        </div>
+
+        <div id="report-tb" class="panel" style="display:none">
+          <div class="panel-header"><div class="panel-title">Trial Balance — 30 June 2025</div><button class="btn-outline" onclick="exportPDF()"><i class="ti ti-download"></i> Export PDF</button></div>
+          <table class="data-table">
+            <thead><tr><th>Code</th><th>Account Name</th><th>Category</th><th style="text-align:right">Debit (GH₵)</th><th style="text-align:right">Credit (GH₵)</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">1000</td><td>Cash & Bank</td><td class="muted">Asset</td><td class="mono" style="text-align:right">392,140</td><td class="mono muted" style="text-align:right">—</td></tr>
+              <tr><td class="mono">1100</td><td>Trade Receivables</td><td class="muted">Asset</td><td class="mono" style="text-align:right">312,000</td><td class="mono muted" style="text-align:right">—</td></tr>
+              <tr><td class="mono">1300</td><td>Inventory</td><td class="muted">Asset</td><td class="mono" style="text-align:right">228,000</td><td class="mono muted" style="text-align:right">—</td></tr>
+              <tr><td class="mono">1500</td><td>Property, Plant & Equipment (net)</td><td class="muted">Asset</td><td class="mono" style="text-align:right">1,036,000</td><td class="mono muted" style="text-align:right">—</td></tr>
+              <tr><td class="mono">2000</td><td>Trade Payables</td><td class="muted">Liability</td><td class="mono muted" style="text-align:right">—</td><td class="mono" style="text-align:right">198,000</td></tr>
+              <tr><td class="mono">2500</td><td>Tax Payables</td><td class="muted">Liability</td><td class="mono muted" style="text-align:right">—</td><td class="mono" style="text-align:right">43,580</td></tr>
+              <tr><td class="mono">3000</td><td>Share Capital</td><td class="muted">Equity</td><td class="mono muted" style="text-align:right">—</td><td class="mono" style="text-align:right">500,000</td></tr>
+              <tr><td class="mono">3100</td><td>Retained Earnings</td><td class="muted">Equity</td><td class="mono muted" style="text-align:right">—</td><td class="mono" style="text-align:right">938,290</td></tr>
+              <tr><td class="mono">4000</td><td>Revenue</td><td class="muted">Income</td><td class="mono muted" style="text-align:right">—</td><td class="mono" style="text-align:right">847,000</td></tr>
+              <tr><td class="mono">5000</td><td>Cost of Sales</td><td class="muted">Expense</td><td class="mono" style="text-align:right">280,600</td><td class="mono muted" style="text-align:right">—</td></tr>
+              <tr><td class="mono">6000</td><td>Operating Expenses</td><td class="muted">Expense</td><td class="mono" style="text-align:right">353,400</td><td class="mono muted" style="text-align:right">—</td></tr>
+              <tr style="background:rgba(31,206,138,.06)"><td></td><td style="font-weight:600;color:var(--green)">TOTALS</td><td></td><td class="mono green" style="text-align:right;font-weight:600">2,602,140</td><td class="mono green" style="text-align:right;font-weight:600">2,526,870</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:10px;padding:10px 12px;background:rgba(31,206,138,.08);border-radius:var(--radius-sm);font-size:12px;color:var(--green)"><i class="ti ti-check"></i> Trial Balance is balanced · Difference: GH₵ 75,270 (retained earnings to be updated)</div>
+        </div>
+      </div>
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end app -->
+
+<script>
+// ─── NAV ───
+const pageTitles={dashboard:'Executive Dashboard',coa:'Chart of Accounts',gl:'General Ledger',journals:'Journal Entries',ar:'Accounts Receivable',ap:'Accounts Payable',cashbook:'Cashbook & Bank',budget:'Budget Management',forecast:'Forecasting & Projections',payroll:'Payroll Management',assets:'Fixed Assets Register',inventory:'Inventory Management',tax:'Taxation & Compliance',reports:'Financial Reports'};
+function nav(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  document.getElementById('pageTitle').textContent=pageTitles[id]||id;
+  document.getElementById('mainContent').scrollTop=0;
+  setTimeout(()=>initCharts(id),80);
+}
+
+// ─── CLOCK ───
+function tick(){
+  const now=new Date();
+  document.getElementById('liveClock').textContent=now.toLocaleTimeString('en-GH',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' · '+now.toLocaleDateString('en-GH',{day:'2-digit',month:'short',year:'numeric'});
+}
+tick(); setInterval(tick,1000);
+
+// ─── TOAST ───
+function showToast(msg,type='success'){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className='toast'+(type==='error'?' error':type==='warning'?' warning':'');
+  t.innerHTML='<i class="ti ti-'+(type==='success'?'check':type==='error'?'x':'info-circle')+'" style="margin-right:8px;color:var(--'+(type==='success'?'green':type==='error'?'red':'blue')+')"></i>'+msg;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(40px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300);},3500);
+}
+
+// ─── MODAL ───
+function openModal(title,body){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').innerHTML=body;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.add('hidden');}
+function saveModal(){closeModal();showToast('Entry saved and posted successfully ✓');}
+
+function openNewEntry(){
+  openModal('New Journal Entry',`
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" value="2025-06-11"></div>
+      <div class="form-group"><label class="form-label">Reference</label><input class="form-input" placeholder="JV-0049"></div>
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">Narration</label><input class="form-input" placeholder="Describe the transaction..."></div>
+      <div class="form-group"><label class="form-label">Debit Account</label><select class="form-select"><option>1000 — Cash & Bank</option><option>1100 — Trade Receivables</option><option>5000 — Cost of Sales</option><option>6000 — Operating Expenses</option></select></div>
+      <div class="form-group"><label class="form-label">Credit Account</label><select class="form-select"><option>4000 — Revenue</option><option>2000 — Trade Payables</option><option>3000 — Share Capital</option><option>2500 — Tax Payables</option></select></div>
+      <div class="form-group"><label class="form-label">Amount (GH₵)</label><input class="form-input" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Cost Centre</label><select class="form-select"><option>Operations</option><option>Finance</option><option>Sales</option><option>Admin</option></select></div>
+    </div>
+  `);
+}
+
+function openNewInvoice(){
+  openModal('New Sales Invoice',`
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Customer</label><input class="form-input" placeholder="Customer name"></div>
+      <div class="form-group"><label class="form-label">Invoice #</label><input class="form-input" value="INV-2245"></div>
+      <div class="form-group"><label class="form-label">Issue Date</label><input class="form-input" type="date" value="2025-06-11"></div>
+      <div class="form-group"><label class="form-label">Due Date</label><input class="form-input" type="date" value="2025-07-11"></div>
+      <div class="form-group" style="grid-column:1/-1"><label class="form-label">Description</label><input class="form-input" placeholder="Service / goods description"></div>
+      <div class="form-group"><label class="form-label">Amount (GH₵)</label><input class="form-input" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">VAT Rate</label><select class="form-select"><option>15% Standard</option><option>0% Zero-rated</option><option>Exempt</option></select></div>
+    </div>
+  `);
+}
+
+function openNewAccount(){
+  openModal('New Chart of Account',`
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Account Code</label><input class="form-input" placeholder="e.g. 1250"></div>
+      <div class="form-group"><label class="form-label">Account Name</label><input class="form-input" placeholder="Account name"></div>
+      <div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Asset</option><option>Liability</option><option>Equity</option><option>Income</option><option>Expense</option></select></div>
+      <div class="form-group"><label class="form-label">Parent Account</label><select class="form-select"><option>1000 — Cash & Cash Equivalents</option><option>1100 — Current Assets</option><option>2000 — Current Liabilities</option><option>4000 — Revenue</option></select></div>
+    </div>
+  `);
+}
+
+// ─── TRIAL BALANCE MODAL ───
+function showTrialBalance(){nav('reports');showReport('tb',document.querySelector('#reportTabs .tab:last-child'));}
+
+// ─── REPORT TABS ───
+function showReport(id,el){
+  ['pnl','bs','cf','tb'].forEach(r=>{
+    document.getElementById('report-'+r).style.display=r===id?'block':'none';
+  });
+  document.querySelectorAll('#reportTabs .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── AI INSIGHT ROTATE ───
+const insights=[
+  'Revenue increased by 18.4% compared to the prior period, driven by improved collections and new service contracts in Q2. Capital expenditure has exceeded budget by 12% — a revised spending approval is recommended before month-end. Operating cash position remains healthy at GH₵ 392K with a current ratio of 2.4×.',
+  'Gross margin improved to 66.9% this period due to reduced direct labour costs. Three receivables totalling GH₵ 68K are past due — automated reminders have been dispatched. PAYE and SSNIT obligations are current; VAT return of GH₵ 13,540 is due 30 June.',
+  'Working capital stands at GH₵ 565K, well above the industry benchmark. Inventory turnover of 4.2× is healthy. Recommend reviewing the CapEx overage before Q3 procurement approvals are released. Forecast confidence is 83% based on 6 months of historical trend data.'
+];
+let insightIdx=0;
+function refreshInsight(){insightIdx=(insightIdx+1)%insights.length;document.getElementById('aiInsight').textContent=insights[insightIdx];showToast('AI insight refreshed with latest data','info');}
+
+// ─── COA TREE ───
+const coaData=[
+  {name:'1000 — Assets',total:'GH₵ 2,058,540',children:[
+    {code:'1000',name:'Cash & Bank',balance:'392,140'},{code:'1100',name:'Trade Receivables',balance:'312,000'},
+    {code:'1300',name:'Inventory',balance:'228,000'},{code:'1400',name:'Prepayments',balance:'48,400'},
+    {code:'1500',name:'Property, Plant & Equipment',balance:'1,036,000'},{code:'1600',name:'Intangible Assets',balance:'42,000'}
+  ]},
+  {name:'2000 — Liabilities',total:'GH₵ 620,250',children:[
+    {code:'2000',name:'Trade Payables',balance:'198,000'},{code:'2200',name:'Accrued Expenses',balance:'164,670'},
+    {code:'2500',name:'Tax Payables',balance:'43,580'},{code:'2800',name:'Long-term Loans',balance:'214,000'}
+  ]},
+  {name:'3000 — Equity',total:'GH₵ 1,438,290',children:[
+    {code:'3000',name:'Share Capital',balance:'500,000'},{code:'3100',name:'Retained Earnings',balance:'778,540'},
+    {code:'3200',name:'Current Year Profit',balance:'159,750'}
+  ]},
+  {name:'4000 — Income',total:'GH₵ 847,000',children:[
+    {code:'4100',name:'Sales Revenue',balance:'406,800'},{code:'4200',name:'Rental Income',balance:'237,160'},
+    {code:'4300',name:'Service Revenue',balance:'203,040'}
+  ]},
+  {name:'5000 — Cost of Sales',total:'GH₵ 280,600',children:[
+    {code:'5100',name:'Direct Materials',balance:'184,200'},{code:'5200',name:'Direct Labour',balance:'96,400'}
+  ]},
+  {name:'6000 — Expenses',total:'GH₵ 353,400',children:[
+    {code:'6100',name:'Salaries & Staff Costs',balance:'185,000'},{code:'6200',name:'Depreciation',balance:'73,800'},
+    {code:'6300',name:'Marketing & Sales',balance:'52,000'},{code:'6400',name:'Admin & General',balance:'28,400'},
+    {code:'6500',name:'Finance Costs',balance:'14,200'}
+  ]}
+];
+function buildCOA(){
+  const tree=document.getElementById('coaTree');
+  tree.innerHTML=coaData.map((g,i)=>`
+    <div class="coa-group">
+      <div class="coa-header" onclick="toggleCOA(${i})">
+        <i class="ti ti-chevron-down" id="coa-icon-${i}" style="font-size:13px;color:var(--text3);transition:transform .2s"></i>
+        <span class="coa-header-name">${g.name}</span>
+        <span class="coa-header-total">${g.total}</span>
+      </div>
+      <div class="coa-children" id="coa-children-${i}">
+        ${g.children.map(c=>`<div class="coa-row" onclick="showToast('Ledger for ${c.name} — ${c.balance} GH₵','info')"><span class="coa-code">${c.code}</span><span class="coa-name">${c.name}</span><span class="coa-balance">${c.balance}</span></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+function toggleCOA(i){
+  const ch=document.getElementById('coa-children-'+i);
+  const ic=document.getElementById('coa-icon-'+i);
+  const open=ch.style.display!=='none';
+  ch.style.display=open?'none':'block';
+  ic.style.transform=open?'rotate(-90deg)':'rotate(0deg)';
+}
+buildCOA();
+
+// ─── GL BODY ───
+const glEntries=[
+  ['01 Jun','JV-0041','4000 — Revenue','Sales invoice batch — June','—','142,500','Posted'],
+  ['01 Jun','JV-0041','1100 — Trade Receivables','Sales invoice batch — June','142,500','—','Posted'],
+  ['03 Jun','JV-0042','6100 — Salaries Expense','May payroll processing','78,400','—','Posted'],
+  ['03 Jun','JV-0042','2200 — Payroll Payable','May payroll processing','—','78,400','Posted'],
+  ['05 Jun','JV-0043','6200 — Depreciation','Monthly fixed asset depreciation','12,300','—','Posted'],
+  ['05 Jun','JV-0043','1600 — Accum. Depreciation','Monthly fixed asset depreciation','—','12,300','Posted'],
+  ['07 Jun','JV-0044','2500 — VAT Payable','VAT output for June','—','21,780','Posted'],
+  ['07 Jun','JV-0044','1100 — Trade Receivables','VAT on invoices raised','21,780','—','Posted'],
+  ['09 Jun','JV-0045','6400 — Admin Expenses','Office supplies and utilities','8,250','—','Pending'],
+  ['09 Jun','JV-0045','2000 — Trade Payables','Office supplies accrual','—','8,250','Pending'],
+];
+const glBody=document.getElementById('glBody');
+glEntries.forEach(r=>{
+  const tr=document.createElement('tr');
+  const statusCls=r[6]==='Posted'?'pill-paid':r[6]==='Pending'?'pill-due':'pill-draft';
+  tr.innerHTML=`<td class="muted">${r[0]}</td><td class="mono">${r[1]}</td><td>${r[2]}</td><td class="muted" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r[3]}</td><td class="mono" style="text-align:right;color:${r[4]==='—'?'var(--text3)':'var(--text)'}">${r[4]}</td><td class="mono" style="text-align:right;color:${r[5]==='—'?'var(--text3)':'var(--green)'}">${r[5]}</td><td><span class="pill ${statusCls}">${r[6]}</span></td>`;
+  glBody.appendChild(tr);
+});
+
+// ─── CASHBOOK BODY ───
+const cbTxns=[
+  ['10 Jun','Delta Retail — payment received','Credit','+27,100','392,140'],
+  ['09 Jun','May payroll disbursement','Debit','−78,400','365,040'],
+  ['07 Jun','Ghana Power Supply payment','Debit','−14,200','443,440'],
+  ['05 Jun','Accra Properties — rental receipt','Credit','+42,500','457,640'],
+  ['03 Jun','PAYE remittance to GRA','Debit','−13,840','415,140'],
+  ['01 Jun','Opening balance b/f','Balance','','428,980'],
+];
+const cbBody=document.getElementById('cbBody');
+cbTxns.forEach(r=>{
+  const tr=document.createElement('tr');
+  const amtColor=r[2]==='Credit'?'var(--green)':r[2]==='Debit'?'var(--red)':'var(--text2)';
+  tr.innerHTML=`<td class="muted">${r[0]}</td><td>${r[1]}</td><td class="muted">${r[2]}</td><td class="mono" style="text-align:right;color:${amtColor}">${r[3]}</td><td class="mono" style="text-align:right">${r[4]}</td>`;
+  cbBody.appendChild(tr);
+});
+
+// ─── EXPORT ───
+function exportPDF(){
+  showToast('Preparing PDF export... file will download shortly','info');
+  setTimeout(()=>{
+    const html=document.documentElement.outerHTML;
+    const blob=new Blob([html],{type:'text/html'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='FinFlow_SME_Report_'+new Date().toISOString().slice(0,10)+'.html';
+    a.click();
+    showToast('Report exported successfully ✓');
+  },1200);
+}
+
+// ─── CHARTS ───
+let chartsLoaded={};
+const CHART_DEFAULTS={responsive:true,maintainAspectRatio:false,animation:{duration:600},plugins:{legend:{display:false}}};
+const GRID={color:'rgba(255,255,255,.05)'};
+const TICK={color:'#5c6578',font:{size:10,family:'DM Mono'}};
+
+function initCharts(view){
+  if(chartsLoaded[view])return;
+  chartsLoaded[view]=true;
+
+  if(view==='dashboard'){
+    new Chart(document.getElementById('revenueChart'),{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[
+      {label:'Revenue',data:[118,132,145,158,141,153],borderColor:'#1fce8a',backgroundColor:'rgba(31,206,138,.06)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#1fce8a',borderWidth:2},
+      {label:'Expenses',data:[98,101,108,112,99,105],borderColor:'#f05252',backgroundColor:'transparent',tension:.4,pointRadius:3,pointBackgroundColor:'#f05252',borderWidth:2},
+      {label:'Budget',data:[125,125,130,140,140,145],borderColor:'#3d8ef0',backgroundColor:'transparent',tension:.2,pointRadius:2,borderWidth:1.5,borderDash:[5,3]}
+    ]},options:{...CHART_DEFAULTS,scales:{y:{ticks:{...TICK,callback:v=>'₵'+v+'K'},grid:GRID},x:{ticks:TICK,grid:{display:false}}}}});
+    new Chart(document.getElementById('donutChart'),{type:'doughnut',data:{labels:['Sales','Rental','Services'],datasets:[{data:[48,28,24],backgroundColor:['#1fce8a','#3d8ef0','#9c6fff'],borderWidth:0,hoverOffset:6}]},options:{...CHART_DEFAULTS,cutout:'72%'}});
+  }
+  if(view==='ar'){
+    new Chart(document.getElementById('agingChart'),{type:'bar',data:{labels:['Current 0–30','31–60 days','61–90 days','90+ days'],datasets:[{data:[162,82,45,23],backgroundColor:['#1fce8a','#f5a623','#f05252','#a32d2d'],borderRadius:5,borderWidth:0}]},options:{...CHART_DEFAULTS,scales:{y:{ticks:{...TICK,callback:v=>'₵'+v+'K'},grid:GRID},x:{ticks:TICK,grid:{display:false}}}}});
+  }
+  if(view==='ap'){
+    new Chart(document.getElementById('apAgingChart'),{type:'bar',data:{labels:['0–30','31–60','61–90','90+'],datasets:[{data:[94,62,28,14],backgroundColor:['#3d8ef0','#f5a623','#f05252','#a32d2d'],borderRadius:5,borderWidth:0}]},options:{...CHART_DEFAULTS,indexAxis:'y',scales:{x:{ticks:{...TICK,callback:v=>'₵'+v+'K'},grid:GRID},y:{ticks:TICK,grid:{display:false}}}}});
+  }
+  if(view==='cashbook'){
+    new Chart(document.getElementById('cashflowChart'),{type:'bar',data:{labels:['W1','W2','W3','W4'],datasets:[
+      {label:'Inflows',data:[68,54,52,44],backgroundColor:'rgba(31,206,138,.7)',borderRadius:4,borderWidth:0},
+      {label:'Outflows',data:[[-42],[-38],[-55],[-48]].map(v=>v[0]),backgroundColor:'rgba(240,82,82,.7)',borderRadius:4,borderWidth:0}
+    ]},options:{...CHART_DEFAULTS,scales:{y:{ticks:{...TICK,callback:v=>'₵'+Math.abs(v)+'K'},grid:GRID},x:{ticks:TICK,grid:{display:false}}}}});
+  }
+  if(view==='budget'){
+    new Chart(document.getElementById('budgetChart'),{type:'bar',data:{labels:['Payroll','Marketing','Operations','Utilities','CapEx','IT'],datasets:[
+      {label:'Budget',data:[210,60,80,35,100,40],backgroundColor:'rgba(61,142,240,.25)',borderColor:'#3d8ef0',borderWidth:1,borderRadius:3},
+      {label:'Actual',data:[185,52,78,29,112,31],backgroundColor:['#1fce8a','#1fce8a','#1fce8a','#1fce8a','#f05252','#1fce8a'],borderRadius:3,borderWidth:0}
+    ]},options:{...CHART_DEFAULTS,scales:{y:{ticks:{...TICK,callback:v=>'₵'+v+'K'},grid:GRID},x:{ticks:TICK,grid:{display:false}}}}});
+  }
+  if(view==='forecast'){
+    new Chart(document.getElementById('forecastChart'),{type:'line',data:{labels:['Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[
+      {label:'Best Case',data:[430,465,490,530,580,620],borderColor:'#3d8ef0',backgroundColor:'transparent',borderDash:[4,3],tension:.4,pointRadius:2,borderWidth:1.5},
+      {label:'Base Case',data:[405,428,452,478,495,510],borderColor:'#1fce8a',backgroundColor:'rgba(31,206,138,.07)',fill:true,tension:.4,pointRadius:3,borderWidth:2.5},
+      {label:'Worst Case',data:[370,355,340,330,300,280],borderColor:'#f05252',backgroundColor:'transparent',borderDash:[4,3],tension:.4,pointRadius:2,borderWidth:1.5}
+    ]},options:{...CHART_DEFAULTS,scales:{y:{ticks:{...TICK,callback:v=>'₵'+v+'K'},grid:GRID},x:{ticks:TICK,grid:{display:false}}}}});
+    new Chart(document.getElementById('revForecastChart'),{type:'bar',data:{labels:['Jul','Aug','Sep','Oct','Nov','Dec'],datasets:[
+      {label:'Sales',data:[72,78,84,90,96,100],backgroundColor:'#1fce8a',borderRadius:4,borderWidth:0,stack:'s'},
+      {label:'Rental',data:[40,40,42,42,44,44],backgroundColor:'#3d8ef0',borderRadius:4,borderWidth:0,stack:'s'},
+      {label:'Services',data:[32,35,38,40,44,48],backgroundColor:'#9c6fff',borderRadius:4,borderWidth:0,stack:'s'}
+    ]},options:{...CHART_DEFAULTS,scales:{y:{stacked:true,ticks:{...TICK,callback:v=>'₵'+v+'K'},grid:GRID},x:{stacked:true,ticks:TICK,grid:{display:false}}}}});
+  }
+  if(view==='payroll'){
+    new Chart(document.getElementById('payrollChart'),{type:'doughnut',data:{labels:['Net Pay','PAYE','SSNIT Emp','SSNIT 5.5%'],datasets:[{data:[62,14.8,12.96,5.28],backgroundColor:['#1fce8a','#f05252','#f5a623','#3d8ef0'],borderWidth:0,hoverOffset:6}]},options:{...CHART_DEFAULTS,cutout:'65%'}});
+  }
+}
+// Init dashboard on load
+setTimeout(()=>initCharts('dashboard'),200);
+// Simulate live revenue update
+setInterval(()=>{
+  const v=847+(Math.random()*2-1).toFixed(1)*1;
+  document.getElementById('d-rev').textContent='GH₵ '+v.toFixed(0)+'K';
+},8000);
+</script>
+</body>
+</html>
